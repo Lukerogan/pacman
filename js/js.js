@@ -7,7 +7,7 @@ window.onresize = function() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
-
+//code is lukes
 class Boundary {
     static width = 40
     static height = 40
@@ -27,7 +27,7 @@ class Player {
     constructor({position, velocity}){
         this.position = position
         this.velocity = velocity
-        this.radius = 10
+        this.radius = 15
     }
     draw(){
         c.beginPath()
@@ -72,14 +72,14 @@ const keys = {
 }
 
 let lastKey = ''
-
+//code is lukes
 
 const map = [
-    ['-','-','-','-','-','-'],
-    ['-',' ',' ',' ',' ','-'],
-    ['-',' ','-','-',' ','-'],
-    ['-',' ',' ',' ',' ','-'],
-    ['-','-','-','-','-','-']
+    ['-','-','-','-','-','-','-'],
+    ['-',' ',' ',' ',' ',' ','-'],
+    ['-',' ','-',' ','-',' ','-'],
+    ['-',' ',' ',' ',' ',' ','-'],
+    ['-','-','-','-','-','-','-']
 ]
 
 
@@ -98,20 +98,23 @@ map.forEach((row, i) => {
         }
     })
 })
+//code is lukes
+function circleCollidesWithRectangle({
+    circle,
+    rectangle
+}){
+    return(circle.position.y - circle.radius + circle.velocity.y <= rectangle.position.y + rectangle.height &&
+        circle.position.x + circle.radius + circle.velocity.x >= rectangle.position.x &&
+        circle.position.y + circle.radius + circle.velocity.y >= rectangle.position.y &&
+        circle.position.x - circle.radius + circle.velocity.x <= rectangle.position.x + rectangle.width)
+}
 
 function animate(){
     requestAnimationFrame(animate)
     c.clearRect(0,0, canvas.width, canvas.height)
-    boundaries.forEach((boundary) => {
-        boundary.draw();
-        
-    })
-    
-    player.update();
-    player.velocity.x=0;
-    player.velocity.y=0;
 
     if(keys.w.pressed && lastKey === 'w'){
+       
         player.velocity.y = -5;
     }else if(keys.a.pressed&& lastKey === 'a'){
         player.velocity.x=-5
@@ -120,6 +123,29 @@ function animate(){
     }else if(keys.d.pressed&& lastKey === 'd'){
         player.velocity.x=5
     }
+
+
+
+
+    boundaries.forEach((boundary) => {
+        boundary.draw();
+        
+        if (player.position.y - player.radius + player.velocity.y <= boundary.position.y + boundary.height &&
+            player.position.x + player.radius + player.velocity.x >= boundary.position.x &&
+            player.position.y + player.radius + player.velocity.y >= boundary.position.y &&
+            player.position.x - player.radius + player.velocity.x <= boundary.position.x + boundary.width) {
+                player.velocity.x=0;
+                player.velocity.y=0;
+           
+        }
+    })
+    
+    player.update();
+    // player.velocity.x=0;
+    // player.velocity.y=0;
+    //code is lukes
+
+    
 }
 animate();
 
@@ -142,7 +168,7 @@ addEventListener('keydown',({key})=>{
             keys.d.pressed = true;
             lastKey = 'd'
         break
-    }
+    }//code is lukes
 })
 addEventListener('keyup',({key})=>{
     switch(key){
@@ -161,4 +187,4 @@ addEventListener('keyup',({key})=>{
     }
 
 
-})
+})//code is lukes
