@@ -1,5 +1,8 @@
 const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
+
+const scoreEl = document.querySelector('#scoreEl');
+
 console.log(canvas);
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -45,6 +48,56 @@ class Player {
     }
 }
 
+
+class Ghost {
+    constructor({ position, velocity, color = 'red' }) {
+        this.position = position
+        this.velocity = velocity
+        this.radius = 15
+        this.color = color
+    }
+    draw() {
+        c.beginPath()
+        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2,)
+        c.fillStyle = this.color
+        c.fill()
+        c.closePath()
+    }
+    update() {
+        this.draw();
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+    }
+}
+
+
+class Pellet {
+    constructor({ position }) {
+        this.position = position
+        this.radius = 3
+    }
+    draw() {
+        c.beginPath()
+        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2,)
+        c.fillStyle = 'white'
+        c.fill()
+        c.closePath()
+    }
+}
+
+const pellets = [];
+const ghosts = [
+    new Ghost({
+        position: {
+            x: Boundary.width * 6 + Boundary.width / 2,
+            y: Boundary.height + Boundary.height / 2
+        },
+        velocity: {
+            x: 0,
+            y: 0
+        }
+    })
+];
 const boundaries = [];
 const player = new Player({
     position: {
@@ -76,19 +129,21 @@ const keys = {
 let lastKey = ''
 //code is lukes
 
+let score = 0;
+
 const map = [
     ['1', '-', '-', '-', '-', '-', '-', '-', '-', '-', '2'],
-    ['|', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '|'],
-    ['|', ' ', 'b', ' ', '[', '7', ']', ' ', 'b', ' ', '|'],
-    ['|', ' ', ' ', ' ', ' ', 'u', ' ', ' ', ' ', ' ', '|'],
-    ['|', ' ', '[', ']', ' ', ' ', ' ', '[', ']', ' ', '|'],
-    ['|', ' ', ' ', ' ', ' ', 'n', ' ', ' ', ' ', ' ', '|'],
-    ['|', ' ', 'b', ' ', '[', '+', ']', ' ', 'b', ' ', '|'],
-    ['|', ' ', ' ', ' ', ' ', 'u', ' ', ' ', ' ', ' ', '|'],
-    ['|', ' ', '[', ']', ' ', ' ', ' ', '[', ']', ' ', '|'],
-    ['|', ' ', ' ', ' ', ' ', 'n', ' ', ' ', ' ', ' ', '|'],
-    ['|', ' ', 'b', ' ', '[', '5', ']', ' ', 'b', ' ', '|'],
-    ['|', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', 'p', '|'],
+    ['|', '.', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
+    ['|', '.', 'b', '.', '[', '7', ']', '.', 'b', '.', '|'],
+    ['|', '.', '.', '.', '.', 'u', '.', '.', '.', '.', '|'],
+    ['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
+    ['|', '.', '.', '.', '.', 'n', '.', '.', '.', '.', '|'],
+    ['|', '.', 'b', '.', '[', '+', ']', '.', 'b', '.', '|'],
+    ['|', '.', '.', '.', '.', 'u', '.', '.', '.', '.', '|'],
+    ['|', '.', '[', ']', '.', '.', '.', '[', ']', '.', '|'],
+    ['|', '.', '.', '.', '.', 'n', '.', '.', '.', '.', '|'],
+    ['|', '.', 'b', '.', '[', '5', ']', '.', 'b', '.', '|'],
+    ['|', '.', '.', '.', '.', '.', '.', '.', '.', '.', '|'],
     ['4', '-', '-', '-', '-', '-', '-', '-', '-', '-', '3']
 ]
 
@@ -270,6 +325,16 @@ map.forEach((row, i) => {
                       })
                     )
                     break
+                  case '.':
+                    pellets.push(
+                      new Pellet({
+                        position: {
+                          x: j * Boundary.width + Boundary.width / 2,
+                          y: i * Boundary.height + Boundary.height / 2
+                        }
+                      })
+                    )
+                    break
         }
     })
 })
@@ -375,9 +440,18 @@ function animate() {
         }
     }
 
+for (let i = pellets.length - 1; i > 0; i--) {
+    const pellet = pellets[i]
+    pellet.draw()
 
-
-
+    if (Math.hypot(pellet.position.x - player.position.x, pellet.position.y - player.position.y) < pellet.radius + player.radius) {
+        console.log('collided')
+        pellets.splice(i, 1)
+        score += 10
+        scoreEl.innerHTML = score
+    }
+}
+   
 
     boundaries.forEach((boundary) => {
         boundary.draw();
@@ -398,7 +472,9 @@ function animate() {
     // player.velocity.y=0;
     //code is lukes
 
-
+ghosts.forEach((ghost) => {
+    ghost.update();
+})
 }
 animate();
 
