@@ -285,11 +285,11 @@ function circleCollidesWithRectangle({
         circle.position.x - circle.radius + circle.velocity.x <= rectangle.position.x + rectangle.width)
 }
 
-function animate() {
+
 function animate() {
     requestAnimationFrame(animate)
     c.clearRect(0, 0, canvas.width, canvas.height)
-    c.clearRect(0, 0, canvas.width, canvas.height)
+
 
     if (keys.w.pressed && lastKey === 'w') {
         for (let i = 0; i < boundaries.length; i++) {
